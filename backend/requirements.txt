@@ -21,8 +21,8 @@ requests==2.31.0
 openai>=1.0.0
 
 # Computer Vision
-opencv-python==4.9.0.80
-mediapipe==0.10.9
+opencv-python-headless
+mediapipe>=0.10.13
 numpy==1.26.3
 
 # Audio Processing
