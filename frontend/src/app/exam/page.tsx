@@ -383,7 +383,7 @@ export default function ExamPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+        <div className="w-full px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-bold text-gray-800">AI Interview Examination</h1>
@@ -410,10 +410,10 @@ export default function ExamPage() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid lg:grid-cols-4 gap-6">
+      <div className="w-full px-6 py-6">
+        <div className="grid lg:grid-cols-5 gap-6">
           {/* Question Area */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-4">
             <QuestionDisplay
               question={currentQuestion}
               answer={answer}
