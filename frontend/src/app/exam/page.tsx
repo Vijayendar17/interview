@@ -139,6 +139,21 @@ export default function ExamPage() {
     try {
       setIsLoading(true);
 
+      // Trigger Fullscreen
+      try {
+        const element = document.documentElement;
+        if (element.requestFullscreen) {
+          await element.requestFullscreen();
+        } else if ((element as any).webkitRequestFullscreen) {
+          await (element as any).webkitRequestFullscreen();
+        } else if ((element as any).msRequestFullscreen) {
+          await (element as any).msRequestFullscreen();
+        }
+      } catch (fsError) {
+        console.warn("Fullscreen request failed:", fsError);
+        // We continue anyway, but it's noted in the browser
+      }
+
       // Capture the baseline picture for candidate identity validation
       let baselineBase64 = '';
       if (videoRef.current && videoRef.current.readyState === 4) {
