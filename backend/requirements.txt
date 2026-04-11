@@ -11,6 +11,8 @@ asyncpg==0.29.0
 
 # Authentication (JWT validation only)
 python-jose[cryptography]==3.3.0
+bcrypt==4.1.2
+passlib[bcrypt]==1.7.4
 
 # WebSocket
 python-socketio==5.11.0
