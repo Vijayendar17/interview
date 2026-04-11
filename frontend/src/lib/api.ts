@@ -1,6 +1,16 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+let API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+// Production safety check: Ensure the URL is absolute and correctly formatted
+if (typeof window !== 'undefined' && API_URL && !API_URL.startsWith('http')) {
+  API_URL = `https://${API_URL}`;
+}
+
+// Ensure it ends with /api/v1
+if (API_URL && !API_URL.endsWith('/api/v1') && !API_URL.endsWith('/api/v1/')) {
+    API_URL = API_URL.endsWith('/') ? `${API_URL}api/v1` : `${API_URL}/api/v1`;
+}
 
 // Mock JWT token - In production, this would come from your auth service
 const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTIzNDU2NzgtMTIzNC0xMjM0LTEyMzQtMTIzNDU2Nzg5MGFiIiwiZW1haWwiOiJjYW5kaWRhdGVAZXhhbXBsZS5jb20iLCJuYW1lIjoiSm9obiBEb2UiLCJyb2xlIjoiY2FuZGlkYXRlIn0.mock_signature';
