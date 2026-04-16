@@ -46,7 +46,6 @@ export default function ExamPage() {
       checkSystem();
     }
     return () => {
-      // Cleanup stream when component unmounts or setup finishes
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
