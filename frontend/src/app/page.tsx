@@ -1,8 +1,31 @@
 'use client';
 
+import type { CSSProperties, ReactNode } from 'react';
 import { useEffect, useState } from 'react';
+import { Manrope, Space_Grotesk } from 'next/font/google';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Brain, Camera, Shield, LogOut } from 'lucide-react';
+import {
+  ArrowRight,
+  BookOpenCheck,
+  BrainCircuit,
+  Camera,
+  CheckCircle2,
+  Clock3,
+  LogOut,
+  ShieldCheck,
+  Sparkles,
+  Target,
+} from 'lucide-react';
+
+const displayFont = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['500', '700'],
+});
+
+const bodyFont = Manrope({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+});
 
 export default function Home() {
   const router = useRouter();
@@ -12,11 +35,24 @@ export default function Home() {
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     const userStr = localStorage.getItem('user');
+
     if (token && userStr) {
       setIsLoggedIn(true);
       try {
-        setUserName(JSON.parse(userStr).name);
-      } catch (e) {}
+        const parsedUser = JSON.parse(userStr) as {
+          name?: string;
+          full_name?: string;
+          email?: string;
+        };
+        setUserName(
+          parsedUser.name ??
+            parsedUser.full_name ??
+            parsedUser.email?.split('@')[0] ??
+            'Candidate',
+        );
+      } catch {
+        setUserName('Candidate');
+      }
     }
   }, []);
 
@@ -27,141 +63,373 @@ export default function Home() {
     setUserName('');
   };
 
+  const reveal = (delayMs: number): CSSProperties => ({
+    animationDelay: `${delayMs}ms`,
+    animationFillMode: 'both',
+  });
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="text-center mb-16 animate-slide-in">
-          <div className="flex justify-center mb-6">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-2xl">
-              <Brain className="w-16 h-16 text-white" />
+    <main
+      className={`${bodyFont.className} relative min-h-screen overflow-hidden bg-[#f4f5ef] text-slate-900`}
+    >
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-300/40 blur-3xl" />
+        <div className="absolute -right-16 top-1/3 h-96 w-96 rounded-full bg-emerald-200/50 blur-3xl" />
+        <div className="absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-amber-200/55 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,_rgba(15,23,42,0.06)_1px,_transparent_0)] bg-[length:28px_28px]" />
+      </div>
+
+      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-14 pt-8 sm:px-6 lg:px-8">
+        <header className="animate-slide-in rounded-3xl border border-white/60 bg-white/70 p-4 shadow-lg shadow-slate-300/35 backdrop-blur-sm sm:p-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-600 text-white shadow-md shadow-teal-600/35">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div>
+                <p className={`${displayFont.className} text-lg font-semibold text-slate-900`}>
+                  AI Interview Studio
+                </p>
+                <p className="text-sm text-slate-600">Practice. Proctor. Perform.</p>
+              </div>
+            </div>
+
+            {isLoggedIn ? (
+              <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                <div className="hidden rounded-xl bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700 sm:block">
+                  {userName}
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-rose-200 hover:text-rose-600"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => router.push('/login')}
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-teal-200 hover:text-teal-700"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => router.push('/signup')}
+                  className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                >
+                  Create account
+                </button>
+              </div>
+            )}
+          </div>
+        </header>
+
+        <section className="mt-10 grid items-start gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
+          <div className="animate-slide-in" style={reveal(80)}>
+            <p className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-4 py-1 text-sm font-semibold text-cyan-800">
+              <Target className="h-4 w-4" />
+              AI-guided interview preparation
+            </p>
+            <h1
+              className={`${displayFont.className} mt-5 text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl`}
+            >
+              Build confidence before the real interview day.
+            </h1>
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">
+              Run realistic technical interviews with adaptive questions, live proctoring, and
+              structured feedback so every practice session feels like the real thing.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={() => router.push(isLoggedIn ? '/exam' : '/signup')}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-teal-600 px-6 py-3.5 text-base font-semibold text-white transition hover:bg-teal-700 hover:shadow-lg hover:shadow-teal-500/25"
+              >
+                {isLoggedIn ? 'Continue to Exam' : 'Start Free Interview'}
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <a
+                href="#how-it-works"
+                className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-6 py-3.5 text-base font-semibold text-slate-700 transition hover:border-slate-400"
+              >
+                See how it works
+              </a>
+            </div>
+
+            <div className="mt-9 grid gap-3 sm:grid-cols-3">
+              <MetricCard value="3" label="Interview formats" />
+              <MetricCard value="< 90s" label="Quick setup check" />
+              <MetricCard value="Real-time" label="Integrity signals" />
             </div>
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            AI Interview Examination System
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Experience the future of technical interviews with AI-powered question generation,
-            adaptive difficulty, and integrated proctoring.
-          </p>
-          {isLoggedIn && (
-            <div className="mt-6 inline-flex items-center gap-4 bg-white px-6 py-3 rounded-full shadow-sm border border-gray-100">
-              <span className="text-gray-700 font-medium">Welcome back, {userName}</span>
-              <div className="w-px h-4 bg-gray-200"></div>
-              <button onClick={handleLogout} className="text-gray-500 hover:text-red-500 flex items-center gap-1 transition-colors text-sm font-medium">
-                <LogOut className="w-4 h-4" /> Sign Out
-              </button>
+
+          <div
+            className="animate-slide-in rounded-3xl border border-white/70 bg-white/75 p-6 shadow-xl shadow-slate-300/30 backdrop-blur-md sm:p-7"
+            style={reveal(190)}
+          >
+            <div className="flex items-center justify-between">
+              <h2 className={`${displayFont.className} text-xl font-semibold text-slate-900`}>
+                Interview Flow
+              </h2>
+              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                Candidate-ready
+              </span>
             </div>
-          )}
-        </div>
+            <div className="mt-6 space-y-5">
+              <FlowStep
+                step="01"
+                title="System Readiness"
+                description="Camera, microphone, and environment validation before the timer starts."
+              />
+              <FlowStep
+                step="02"
+                title="Adaptive Question Set"
+                description="MCQ, coding, and descriptive prompts shift in difficulty as you respond."
+              />
+              <FlowStep
+                step="03"
+                title="Instant Report"
+                description="Get strengths, gaps, and targeted skills to practice next."
+              />
+            </div>
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm font-semibold text-slate-700">Typical session duration</p>
+              <p className={`${displayFont.className} mt-1 text-2xl font-semibold text-slate-900`}>
+                45-60 minutes
+              </p>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+                <div className="h-full w-4/5 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500" />
+              </div>
+            </div>
+          </div>
+        </section>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <FeatureCard
-            icon={<Brain className="w-8 h-8" />}
-            title="AI-Powered"
-            description="Dynamic question generation using Gemini AI"
-            color="blue"
-          />
-          <FeatureCard
-            icon={<BookOpen className="w-8 h-8" />}
-            title="Adaptive Difficulty"
-            description="Questions adjust based on your performance"
-            color="purple"
-          />
-          <FeatureCard
-            icon={<Camera className="w-8 h-8" />}
-            title="Smart Proctoring"
-            description="Camera and audio monitoring with integrity scoring"
-            color="green"
-          />
-          <FeatureCard
-            icon={<Shield className="w-8 h-8" />}
-            title="Fair & Secure"
-            description="Privacy-aware with minimal data retention"
-            color="orange"
-          />
-        </div>
+        <section className="mt-14">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <FeatureCard
+              icon={<BrainCircuit className="h-6 w-6" />}
+              title="Adaptive Intelligence"
+              description="Questions recalibrate difficulty in real time based on your performance."
+              accent="from-cyan-500 to-teal-500"
+              delay={70}
+            />
+            <FeatureCard
+              icon={<BookOpenCheck className="h-6 w-6" />}
+              title="Balanced Assessments"
+              description="Mix of MCQ, coding, and written reasoning for practical evaluation."
+              accent="from-emerald-500 to-lime-500"
+              delay={140}
+            />
+            <FeatureCard
+              icon={<Camera className="h-6 w-6" />}
+              title="Smart Proctoring"
+              description="Live camera and audio checks with timeline-friendly integrity markers."
+              accent="from-orange-500 to-amber-500"
+              delay={210}
+            />
+            <FeatureCard
+              icon={<ShieldCheck className="h-6 w-6" />}
+              title="Secure by Design"
+              description="Privacy-aware workflows and configurable local storage controls."
+              accent="from-slate-700 to-slate-500"
+              delay={280}
+            />
+          </div>
+        </section>
 
-        {/* CTA Section */}
-        <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Ready to Start Your Exam?</h2>
-          <p className="text-gray-600 mb-6">
-            Before you begin, please ensure:
-          </p>
-          <ul className="space-y-2 mb-8 text-gray-700">
-            <li className="flex items-center">
-              <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-              You have a stable internet connection
-            </li>
-            <li className="flex items-center">
-              <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-              Your camera and microphone are working
-            </li>
-            <li className="flex items-center">
-              <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-              You are in a quiet, well-lit environment
-            </li>
-            <li className="flex items-center">
-              <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-              You have at least 60 minutes available
-            </li>
-          </ul>
-          
-          {isLoggedIn ? (
+        <section
+          id="how-it-works"
+          className="mt-16 grid gap-6 rounded-3xl border border-white/70 bg-white/75 p-6 shadow-lg shadow-slate-300/30 backdrop-blur-md lg:grid-cols-2 lg:p-8"
+        >
+          <div className="animate-slide-in" style={reveal(90)}>
+            <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+              How it works
+            </p>
+            <h3 className={`${displayFont.className} mt-3 text-3xl font-bold text-slate-900`}>
+              A smoother practice loop, from setup to insights.
+            </h3>
+            <p className="mt-4 max-w-xl text-slate-600">
+              The home flow is designed to reduce friction: clear setup checks, focused exam time,
+              and actionable guidance right after submission.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <StepCard
+              icon={<CheckCircle2 className="h-5 w-5" />}
+              title="Get ready in under two minutes"
+              description="Confirm equipment and room setup quickly before each session."
+              delay={140}
+            />
+            <StepCard
+              icon={<Clock3 className="h-5 w-5" />}
+              title="Stay focused during the exam"
+              description="Structured pacing and integrity monitoring keep interviews fair."
+              delay={200}
+            />
+            <StepCard
+              icon={<Target className="h-5 w-5" />}
+              title="Practice with clear next actions"
+              description="Reports highlight what to strengthen before your next attempt."
+              delay={260}
+            />
+          </div>
+        </section>
+
+        <section className="mt-16 grid gap-6 lg:grid-cols-[1fr_auto]">
+          <div
+            className="animate-slide-in rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+            style={reveal(120)}
+          >
+            <h4 className={`${displayFont.className} text-2xl font-semibold text-slate-900`}>
+              Before You Begin
+            </h4>
+            <p className="mt-2 text-slate-600">
+              A quick pre-flight list to help you avoid interruptions.
+            </p>
+            <ul className="mt-5 space-y-3 text-slate-700">
+              <ChecklistItem label="Stable internet and fully charged device" />
+              <ChecklistItem label="Working camera and microphone permissions" />
+              <ChecklistItem label="Quiet, well-lit room for consistent proctoring" />
+              <ChecklistItem label="At least 60 minutes blocked for one attempt" />
+            </ul>
+          </div>
+          <div
+            className="animate-slide-in rounded-3xl bg-slate-900 p-6 text-white shadow-2xl shadow-slate-500/25 sm:p-8 lg:max-w-sm"
+            style={reveal(220)}
+          >
+            <p className="text-sm font-semibold uppercase tracking-wide text-cyan-300">
+              Ready now?
+            </p>
+            <h5 className={`${displayFont.className} mt-3 text-2xl font-semibold`}>
+              Launch your next AI interview.
+            </h5>
+            <p className="mt-3 text-slate-300">
+              Start a fresh session and get feedback you can act on immediately.
+            </p>
             <button
-              onClick={() => router.push('/exam')}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+              onClick={() => router.push(isLoggedIn ? '/exam' : '/login')}
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-5 py-3.5 font-semibold text-slate-900 transition hover:bg-cyan-300"
             >
-              Start Examination
+              {isLoggedIn ? 'Start Examination' : 'Login to Begin'}
+              <ArrowRight className="h-4 w-4" />
             </button>
-          ) : (
-            <div className="flex flex-col gap-4">
-              <button
-                onClick={() => router.push('/login')}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-              >
-                Login to Start
-              </button>
+            {!isLoggedIn && (
               <button
                 onClick={() => router.push('/signup')}
-                className="w-full bg-white text-blue-600 border-2 border-blue-100 py-3 rounded-xl font-semibold hover:border-blue-200 transition-all duration-200"
+                className="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-slate-700 px-5 py-3.5 font-semibold text-slate-100 transition hover:border-slate-500"
               >
-                Create an Account
+                Create account
               </button>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </section>
 
-        {/* Footer */}
-        <div className="text-center mt-12 text-gray-500 text-sm">
-          <p>Powered by Google Gemini AI • Built with Next.js & FastAPI</p>
-        </div>
+        <footer className="mt-10 text-center text-sm text-slate-500">
+          <p>Powered by modern AI services and built with Next.js + FastAPI.</p>
+        </footer>
       </div>
     </main>
   );
 }
 
-function FeatureCard({ icon, title, description, color }: {
-  icon: React.ReactNode;
+function MetricCard({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
+      <p className={`${displayFont.className} text-2xl font-semibold text-slate-900`}>{value}</p>
+      <p className="text-sm text-slate-600">{label}</p>
+    </div>
+  );
+}
+
+function FlowStep({
+  step,
+  title,
+  description,
+}: {
+  step: string;
   title: string;
   description: string;
-  color: string;
 }) {
-  const colorClasses = {
-    blue: 'from-blue-500 to-blue-600',
-    purple: 'from-purple-500 to-purple-600',
-    green: 'from-green-500 to-green-600',
-    orange: 'from-orange-500 to-orange-600',
-  }[color];
-
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow border border-gray-100">
-      <div className={`bg-gradient-to-r ${colorClasses} w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4`}>
+    <div className="flex gap-4">
+      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
+        {step}
+      </div>
+      <div>
+        <p className="font-semibold text-slate-900">{title}</p>
+        <p className="text-sm leading-relaxed text-slate-600">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+  accent,
+  delay,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  accent: string;
+  delay: number;
+}) {
+  return (
+    <article
+      className="animate-slide-in rounded-3xl border border-slate-200 bg-white/80 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+      style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
+    >
+      <div
+        className={`mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${accent} text-white shadow-md`}
+      >
         {icon}
       </div>
-      <h3 className="font-semibold text-gray-800 mb-2">{title}</h3>
-      <p className="text-sm text-gray-600">{description}</p>
-    </div>
+      <h3 className={`${displayFont.className} text-lg font-semibold text-slate-900`}>{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>
+    </article>
+  );
+}
+
+function StepCard({
+  icon,
+  title,
+  description,
+  delay,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  delay: number;
+}) {
+  return (
+    <article
+      className="animate-slide-in rounded-2xl border border-slate-200 bg-slate-50 p-4"
+      style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
+    >
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 text-cyan-300">
+          {icon}
+        </span>
+        <div>
+          <h4 className="font-semibold text-slate-900">{title}</h4>
+          <p className="text-sm text-slate-600">{description}</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ChecklistItem({ label }: { label: string }) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className="mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+        <CheckCircle2 className="h-3.5 w-3.5" />
+      </span>
+      <span>{label}</span>
+    </li>
   );
 }
