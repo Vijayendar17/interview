@@ -238,8 +238,9 @@ export default function ExamPage() {
         // No more questions, complete exam
         await handleCompleteExam();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to submit answer:', error);
+      alert('Failed to submit your answer. Please ensure your connection is stable and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -251,8 +252,14 @@ export default function ExamPage() {
     try {
       await examAPI.completeExam(examId);
       router.push(`/report/${examId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to complete exam:', error);
+      const isAlreadyCompleted = error?.response?.status === 400 || error?.response?.status === 404;
+      if (isAlreadyCompleted) {
+         router.push(`/report/${examId}`);
+      } else {
+         alert('Failed to complete the exam. Please check your network connection and try again.');
+      }
     }
   };
 
